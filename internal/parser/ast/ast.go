@@ -24,6 +24,7 @@ type Expression interface {
 type SelectStatement struct {
 	Result []ResultStatement
 	From   *FromStatement
+	Where  *WhereStatement
 }
 
 // ResultStatement node represents a returning expression in a SELECT statement.
@@ -34,6 +35,10 @@ type ResultStatement struct {
 // FromStatement node represents a FROM statement.
 type FromStatement struct {
 	Table string
+}
+
+type WhereStatement struct {
+	Expr Expression
 }
 
 // Column node represents a table column definition.
@@ -48,6 +53,7 @@ type Column struct {
 func (s *SelectStatement) statementNode() {}
 func (s *ResultStatement) statementNode() {}
 func (s *FromStatement) statementNode()   {}
+func (s *WhereStatement) statementNode()  {}
 
 // IdentExpr node represents an identifier.
 type IdentExpr struct {
@@ -60,9 +66,16 @@ type ScalarExpr struct {
 	Literal string
 }
 
+type ConditionExpr struct {
+	Left     Expression
+	Operator token.TokenType
+	Right    Expression
+}
+
 // AsteriskExpr node represents asterisk at `SELECT *` expression.
 type AsteriskExpr struct{}
 
-func (e *IdentExpr) expressionNode()    {}
-func (e *ScalarExpr) expressionNode()   {}
-func (e *AsteriskExpr) expressionNode() {}
+func (e *IdentExpr) expressionNode()     {}
+func (e *ScalarExpr) expressionNode()    {}
+func (e *AsteriskExpr) expressionNode()  {}
+func (e *ConditionExpr) expressionNode() {}

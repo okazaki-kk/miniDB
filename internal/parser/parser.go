@@ -62,9 +62,15 @@ func (p *Parser) parseSelectStatement() (ast.Statement, error) {
 		return nil, err
 	}
 
+	where, err := p.parseWhereStatement()
+	if err != nil {
+		return nil, err
+	}
+
 	selectStmt := ast.SelectStatement{
 		Result: result,
 		From:   from,
+		Where:  where,
 	}
 
 	return &selectStmt, nil
@@ -110,9 +116,8 @@ func (p *Parser) parseResult() (ast.ResultStatement, error) {
 }
 
 func (p *Parser) parseFromStatement() (*ast.FromStatement, error) {
-	fmt.Println(p.token, "from")
 	if p.token.Type != token.FROM {
-		return nil, nil
+		return nil, fmt.Errorf("unexpected token %q, expected where", p.token.Type)
 	}
 
 	p.nextToken()
@@ -127,6 +132,27 @@ func (p *Parser) parseFromStatement() (*ast.FromStatement, error) {
 	}
 
 	return &from, nil
+}
+
+func (p *Parser) parseWhereStatement() (*ast.WhereStatement, error) {
+	if p.token.Type != token.WHERE {
+		return nil, nil
+	}
+
+	p.nextToken()
+
+	expr, err := p.parsePrimaryExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	p.nextToken()
+
+	where := ast.WhereStatement{
+		Expr: expr,
+	}
+
+	return &where, nil
 }
 
 func (p *Parser) parsePrimaryExpr() (ast.Expression, error) {
@@ -146,6 +172,15 @@ func (p *Parser) parseExpr() (ast.Expression, error) {
 	expr, err := p.parseOperand()
 	if err != nil {
 		return nil, err
+	}
+
+	for p.peekToken.Type != token.COMMA && p.peekToken.Type != token.SEMICOLON && p.peekToken.Type != token.EOF && p.peekToken.Type != token.FROM && p.peekToken.Type != token.WHERE {
+		p.nextToken()
+
+		expr, err = p.parseConditionExpr(expr)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return expr, nil
@@ -193,6 +228,24 @@ func (p *Parser) parseScalar(expected token.TokenType) (ast.Expression, error) {
 	}
 
 	return &scalar, nil
+}
+
+func (p *Parser) parseConditionExpr(left ast.Expression) (ast.Expression, error) {
+	operator := p.token.Type
+	p.nextToken()
+
+	right, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	expr := ast.ConditionExpr{
+		Left:     left,
+		Operator: operator,
+		Right:    right,
+	}
+
+	return &expr, nil
 }
 
 func (p *Parser) parseGroupExpr() (ast.Expression, error) {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/okazaki-kk/miniDB/internal/parser/ast"
 	"github.com/okazaki-kk/miniDB/internal/parser/lexer"
+	"github.com/okazaki-kk/miniDB/internal/parser/token"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,6 +46,31 @@ func TestParser_Select(t *testing.T) {
 				},
 				From: &ast.FromStatement{
 					Table: "users",
+				},
+			},
+		},
+		{
+			input: "SELECT age FROM customers WHERE id = 10;",
+			stmt: &ast.SelectStatement{
+				Result: []ast.ResultStatement{
+					{
+						Expr: &ast.IdentExpr{
+							Name: "age",
+						},
+					},
+				},
+				From: &ast.FromStatement{
+					Table: "customers",
+				},
+				Where: &ast.WhereStatement{
+					Expr: &ast.ConditionExpr{
+						Left:     &ast.IdentExpr{Name: "id"},
+						Operator: token.EQ,
+						Right: &ast.ScalarExpr{
+							Type:    token.INT,
+							Literal: "10",
+						},
+					},
 				},
 			},
 		},
