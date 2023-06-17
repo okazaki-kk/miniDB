@@ -1,6 +1,8 @@
 package lexer
 
-import "github.com/okazaki-kk/miniDB/internal/parser/token"
+import (
+	"github.com/okazaki-kk/miniDB/internal/parser/token"
+)
 
 type Lexer struct {
 	input        string
@@ -36,6 +38,9 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.BANG, l.ch)
 		}
+	case '\'':
+		tok.Literal = l.readString()
+		tok.Type = token.TEXT
 	case '/':
 		tok = newToken(token.SLASH, l.ch)
 	case '*':
@@ -108,6 +113,16 @@ func (l *Lexer) readIdentifier() string {
 	}
 	return l.input[position:l.position]
 }
+
+func (l *Lexer) readString() string {
+	l.readChar()
+	position := l.position
+	for l.ch != '\'' {
+		l.readChar()
+	}
+	return l.input[position:l.position]
+}
+
 
 func (l *Lexer) readNumber() string {
 	position := l.position

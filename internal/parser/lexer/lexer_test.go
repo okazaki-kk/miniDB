@@ -120,11 +120,11 @@ func TestLexer_NextToken(t *testing.T) {
 			tokenType: token.INT,
 			literal:   "10",
 		},
-		/*{
+		{
 			input:     "'value'",
 			tokenType: token.TEXT,
 			literal:   "value",
-		},*/
+		},
 		{
 			input:     "true",
 			tokenType: token.TRUE,
