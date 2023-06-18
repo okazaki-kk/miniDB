@@ -9,14 +9,12 @@ import (
 	"github.com/okazaki-kk/miniDB/internal/parser/token"
 )
 
-// Parser takes a Lexer and builds an abstract syntax tree.
 type Parser struct {
 	lexer     *lexer.Lexer
 	token     token.Token
 	peekToken token.Token
 }
 
-// New returns new Parser.
 func New(lx *lexer.Lexer) *Parser {
 	return &Parser{
 		lexer:     lx,
@@ -25,10 +23,7 @@ func New(lx *lexer.Lexer) *Parser {
 	}
 }
 
-// Parse parses the sql and returns a statement.
 func (p *Parser) Parse() (ast.Statement, error) {
-	// For simplicity, we parse one statement at a time but in the next release,
-	// we should implement parsing multiple statements separated semicolon.
 	return p.parseStatement()
 }
 
@@ -42,8 +37,6 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 	// DML
 	case token.SELECT:
 		return p.parseSelectStatement()
-	case token.EOF:
-		return nil, nil
 	default:
 		return nil, fmt.Errorf("unexpected statement: %s(%q)", p.token.Type, p.token.Literal)
 	}
@@ -156,7 +149,7 @@ func (p *Parser) parseWhereStatement() (*ast.WhereStatement, error) {
 }
 
 func (p *Parser) parsePrimaryExpr() (ast.Expression, error) {
-	expr, err := p.parseExpr()
+	expr, err := p.parseExpr(LOWEST)
 	if err != nil {
 		return nil, err
 	}
@@ -168,13 +161,13 @@ func (p *Parser) parsePrimaryExpr() (ast.Expression, error) {
 	return expr, nil
 }
 
-func (p *Parser) parseExpr() (ast.Expression, error) {
+func (p *Parser) parseExpr(precedence int) (ast.Expression, error) {
 	expr, err := p.parseOperand()
 	if err != nil {
 		return nil, err
 	}
 
-	for p.peekToken.Type != token.COMMA && p.peekToken.Type != token.SEMICOLON && p.peekToken.Type != token.EOF && p.peekToken.Type != token.FROM && p.peekToken.Type != token.WHERE {
+	for p.peekToken.Type != token.COMMA && precedence < p.peekPrecedence() {
 		p.nextToken()
 
 		expr, err = p.parseConditionExpr(expr)
@@ -234,7 +227,7 @@ func (p *Parser) parseConditionExpr(left ast.Expression) (ast.Expression, error)
 	operator := p.token.Type
 	p.nextToken()
 
-	right, err := p.parseExpr()
+	right, err := p.parseExpr(LOWEST)
 	if err != nil {
 		return nil, err
 	}
@@ -251,7 +244,7 @@ func (p *Parser) parseConditionExpr(left ast.Expression) (ast.Expression, error)
 func (p *Parser) parseGroupExpr() (ast.Expression, error) {
 	p.nextToken()
 
-	expr, err := p.parseExpr()
+	expr, err := p.parseExpr(LOWEST)
 	if err != nil {
 		return nil, err
 	}
@@ -263,4 +256,11 @@ func (p *Parser) parseGroupExpr() (ast.Expression, error) {
 	}
 
 	return expr, nil
+}
+
+func (p *Parser) peekPrecedence() int {
+	if p, ok := precedences[p.peekToken.Type]; ok {
+		return p
+	}
+	return LOWEST
 }
