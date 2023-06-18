@@ -9,14 +9,12 @@ import (
 	"github.com/okazaki-kk/miniDB/internal/parser/token"
 )
 
-// Parser takes a Lexer and builds an abstract syntax tree.
 type Parser struct {
 	lexer     *lexer.Lexer
 	token     token.Token
 	peekToken token.Token
 }
 
-// New returns new Parser.
 func New(lx *lexer.Lexer) *Parser {
 	return &Parser{
 		lexer:     lx,
@@ -25,10 +23,7 @@ func New(lx *lexer.Lexer) *Parser {
 	}
 }
 
-// Parse parses the sql and returns a statement.
 func (p *Parser) Parse() (ast.Statement, error) {
-	// For simplicity, we parse one statement at a time but in the next release,
-	// we should implement parsing multiple statements separated semicolon.
 	return p.parseStatement()
 }
 
