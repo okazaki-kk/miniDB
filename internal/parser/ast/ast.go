@@ -41,6 +41,11 @@ type WhereStatement struct {
 	Expr Expression
 }
 
+type CreateTableStatement struct {
+	Table   string
+	Columns []Column
+}
+
 // Column node represents a table column definition.
 type Column struct {
 	Name       string
@@ -50,10 +55,11 @@ type Column struct {
 	PrimaryKey bool
 }
 
-func (s *SelectStatement) statementNode() {}
-func (s *ResultStatement) statementNode() {}
-func (s *FromStatement) statementNode()   {}
-func (s *WhereStatement) statementNode()  {}
+func (s *SelectStatement) statementNode()      {}
+func (s *ResultStatement) statementNode()      {}
+func (s *FromStatement) statementNode()        {}
+func (s *WhereStatement) statementNode()       {}
+func (s *CreateTableStatement) statementNode() {}
 
 // IdentExpr node represents an identifier.
 type IdentExpr struct {

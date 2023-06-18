@@ -89,3 +89,42 @@ func TestParser_Select(t *testing.T) {
 		})
 	}
 }
+
+func TestParser_CreateTable(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		input string
+		stmt  ast.Statement
+	}{
+		{
+			input: "CREATE TABLE users (id INT, name TEXT);",
+			stmt: &ast.CreateTableStatement{
+				Table: "users",
+				Columns: []ast.Column{
+					{
+						Name: "id",
+						Type: token.INT,
+					},
+					{
+						Name: "name",
+						Type: token.TEXT,
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.input, func(t *testing.T) {
+			t.Parallel()
+
+			p := New(lexer.New(test.input))
+			stmts, err := p.Parse()
+			assert.NoError(t, err)
+			assert.Equal(t, test.stmt, stmts)
+		})
+	}
+}
