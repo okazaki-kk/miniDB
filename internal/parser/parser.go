@@ -37,8 +37,6 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 	// DML
 	case token.SELECT:
 		return p.parseSelectStatement()
-	case token.EOF:
-		return nil, nil
 	default:
 		return nil, fmt.Errorf("unexpected statement: %s(%q)", p.token.Type, p.token.Literal)
 	}
@@ -151,7 +149,7 @@ func (p *Parser) parseWhereStatement() (*ast.WhereStatement, error) {
 }
 
 func (p *Parser) parsePrimaryExpr() (ast.Expression, error) {
-	expr, err := p.parseExpr()
+	expr, err := p.parseExpr(LOWEST)
 	if err != nil {
 		return nil, err
 	}
@@ -163,13 +161,13 @@ func (p *Parser) parsePrimaryExpr() (ast.Expression, error) {
 	return expr, nil
 }
 
-func (p *Parser) parseExpr() (ast.Expression, error) {
+func (p *Parser) parseExpr(precedence int) (ast.Expression, error) {
 	expr, err := p.parseOperand()
 	if err != nil {
 		return nil, err
 	}
 
-	for p.peekToken.Type != token.COMMA && p.peekToken.Type != token.SEMICOLON && p.peekToken.Type != token.EOF && p.peekToken.Type != token.FROM && p.peekToken.Type != token.WHERE {
+	for p.peekToken.Type != token.COMMA && precedence < p.peekPrecedence() {
 		p.nextToken()
 
 		expr, err = p.parseConditionExpr(expr)
@@ -229,7 +227,7 @@ func (p *Parser) parseConditionExpr(left ast.Expression) (ast.Expression, error)
 	operator := p.token.Type
 	p.nextToken()
 
-	right, err := p.parseExpr()
+	right, err := p.parseExpr(LOWEST)
 	if err != nil {
 		return nil, err
 	}
@@ -246,7 +244,7 @@ func (p *Parser) parseConditionExpr(left ast.Expression) (ast.Expression, error)
 func (p *Parser) parseGroupExpr() (ast.Expression, error) {
 	p.nextToken()
 
-	expr, err := p.parseExpr()
+	expr, err := p.parseExpr(LOWEST)
 	if err != nil {
 		return nil, err
 	}
@@ -258,4 +256,11 @@ func (p *Parser) parseGroupExpr() (ast.Expression, error) {
 	}
 
 	return expr, nil
+}
+
+func (p *Parser) peekPrecedence() int {
+	if p, ok := precedences[p.peekToken.Type]; ok {
+		return p
+	}
+	return LOWEST
 }
