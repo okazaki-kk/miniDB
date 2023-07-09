@@ -17,6 +17,83 @@ func TestParser_Select(t *testing.T) {
 		stmt  ast.Statement
 	}{
 		{
+			input: "SELECT id",
+			stmt: &ast.SelectStatement{
+				Result: []ast.ResultStatement{
+					{
+						Expr: &ast.IdentExpr{Name: "id"},
+					},
+				},
+			},
+		},
+		{
+			input: "SELECT id, name",
+			stmt: &ast.SelectStatement{
+				Result: []ast.ResultStatement{
+					{
+						Expr: &ast.IdentExpr{Name: "id"},
+					},
+					{
+						Expr: &ast.IdentExpr{Name: "name"},
+					},
+				},
+			},
+		},
+		{
+			input: "SELECT 10+2*3",
+			stmt: &ast.SelectStatement{
+				Result: []ast.ResultStatement{
+					{
+						Expr: &ast.ConditionExpr{
+							Left: &ast.ScalarExpr{
+								Type:    token.INT,
+								Literal: "10",
+							},
+							Operator: token.PLUS,
+							Right: &ast.ConditionExpr{
+								Left: &ast.ScalarExpr{
+									Type:    token.INT,
+									Literal: "2",
+								},
+								Operator: token.ASTERISK,
+								Right: &ast.ScalarExpr{
+									Type:    token.INT,
+									Literal: "3",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			input: "SELECT (10+2)*3",
+			stmt: &ast.SelectStatement{
+				Result: []ast.ResultStatement{
+					{
+						Expr: &ast.ConditionExpr{
+							Left: &ast.ConditionExpr{
+								Left: &ast.ScalarExpr{
+									Type:    token.INT,
+									Literal: "10",
+								},
+								Operator: token.PLUS,
+								Right: &ast.ScalarExpr{
+									Type:    token.INT,
+									Literal: "2",
+								},
+							},
+							Operator: token.ASTERISK,
+							Right: &ast.ScalarExpr{
+								Type:    token.INT,
+								Literal: "3",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			input: "SELECT * FROM users;",
 			stmt: &ast.SelectStatement{
 				Result: []ast.ResultStatement{
