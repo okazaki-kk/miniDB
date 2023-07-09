@@ -422,6 +422,35 @@ func TestParser_Insert(t *testing.T) {
 	}
 }
 
+func TestParser_CreateDatabase(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		input string
+		stmt  ast.Statement
+	}{
+		{
+			input: "CREATE DATABASE customers;",
+			stmt: &ast.CreateDatabaseStatement{
+				Database: "customers",
+			},
+		},
+	}
+
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.input, func(t *testing.T) {
+			t.Parallel()
+
+			p := New(lexer.New(test.input))
+			stmts, err := p.Parse()
+			assert.NoError(t, err)
+			assert.Equal(t, test.stmt, stmts)
+		})
+	}
+}
+
 func TestParser_CreateTable(t *testing.T) {
 	t.Parallel()
 
