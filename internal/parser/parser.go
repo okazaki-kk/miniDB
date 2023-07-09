@@ -390,19 +390,6 @@ func (p *Parser) peekPrecedence() int {
 	return LOWEST
 }
 
-func (p *Parser) peekTokenIs(t token.TokenType) bool {
-	return p.peekToken.Type == t
-}
-
-func (p *Parser) expectPeek(t token.TokenType) error {
-	if p.peekTokenIs(t) {
-		p.nextToken()
-		return nil
-	} else {
-		return fmt.Errorf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
-	}
-}
-
 func (p *Parser) expect(tokenType token.TokenType) error {
 	defer p.nextToken()
 
