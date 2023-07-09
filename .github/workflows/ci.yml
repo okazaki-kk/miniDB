@@ -22,8 +22,11 @@ jobs:
         cache: true
     - run: go mod download
 
+    - name: Fmt
+      run: make fmt
+
     - name: Build
       run: go build .
 
     - name: Test
-      run: go test -v ./... -count=10
+      run: make test
