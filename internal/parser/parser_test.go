@@ -594,3 +594,32 @@ func TestParser_Delete(t *testing.T) {
 		})
 	}
 }
+
+func TestParser_Drop(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		input string
+		stmt  ast.Statement
+	}{
+		{
+			input: "DROP DATABASE customers",
+			stmt: &ast.DropDatabaseStatement{
+				Database: "customers",
+			},
+		},
+	}
+
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.input, func(t *testing.T) {
+			t.Parallel()
+
+			p := New(lexer.New(test.input))
+			stmts, err := p.Parse()
+			assert.NoError(t, err)
+			assert.Equal(t, test.stmt, stmts)
+		})
+	}
+}
