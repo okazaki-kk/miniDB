@@ -106,5 +106,5 @@ func (r *Repl) execQuery(input string) (string, error) {
 	if err != nil {
 		return message, fmt.Errorf("failed to execute query: %w", err)
 	}
-	return "", nil
+	return message, nil
 }
