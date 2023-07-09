@@ -37,6 +37,8 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 	// DML
 	case token.SELECT:
 		return p.parseSelectStatement()
+	case token.INSERT:
+		return p.parseInsertStatement()
 	case token.CREATE:
 		p.nextToken()
 		p.nextToken()
@@ -89,6 +91,37 @@ func (p *Parser) parseSelectStatement() (ast.Statement, error) {
 	}
 
 	return &selectStmt, nil
+}
+
+func (p *Parser) parseInsertStatement() (ast.Statement, error) {
+	p.nextToken()
+
+	if err := p.expect(token.INTO); err != nil {
+		return nil, err
+	}
+
+	table, err := p.parseIdent()
+	if err != nil {
+		return nil, err
+	}
+
+	columns, err := p.parseColumnsStatement()
+	if err != nil {
+		return nil, err
+	}
+
+	values, err := p.parseValuesStatement()
+	if err != nil {
+		return nil, err
+	}
+
+	insert := ast.InsertStatement{
+		Table:   table.Name,
+		Columns: columns,
+		Values:  values,
+	}
+
+	return &insert, nil
 }
 
 func (p *Parser) parseCreateStatement() (ast.Statement, error) {
@@ -431,6 +464,62 @@ func (p *Parser) parseGroupExpr() (ast.Expression, error) {
 	}
 
 	return expr, nil
+}
+
+func (p *Parser) parseColumnsStatement() ([]string, error) {
+	var columns []string
+
+	if err := p.expect(token.LPAREN); err != nil {
+		return nil, err
+	}
+
+	for p.token.Type != token.EOF && p.token.Type != token.RPAREN {
+		if p.token.Type == token.COMMA {
+			p.nextToken()
+		}
+
+		column, err := p.parseIdent()
+		if err != nil {
+			return nil, err
+		}
+
+		columns = append(columns, column.Name)
+	}
+
+	if err := p.expect(token.RPAREN); err != nil {
+		return nil, err
+	}
+
+	return columns, nil
+}
+
+func (p *Parser) parseValuesStatement() ([]ast.Expression, error) {
+	var values []ast.Expression
+
+	if err := p.expect(token.VALUES); err != nil {
+		return nil, err
+	}
+
+	if err := p.expect(token.LPAREN); err != nil {
+		return nil, err
+	}
+
+	for p.token.Type != token.EOF && p.token.Type != token.RPAREN {
+		expr, err := p.parsePrimaryExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		values = append(values, expr)
+
+		p.nextToken()
+	}
+
+	if err := p.expect(token.RPAREN); err != nil {
+		return nil, err
+	}
+
+	return values, nil
 }
 
 func (p *Parser) peekPrecedence() int {

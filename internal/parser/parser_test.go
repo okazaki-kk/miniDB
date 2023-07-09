@@ -360,6 +360,68 @@ func TestParser_Select(t *testing.T) {
 	}
 }
 
+func TestParser_Insert(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		input string
+		stmt  ast.Statement
+	}{
+		{
+			input: "INSERT INTO customers (id, name, salary) VALUES (10, 'Tom', 10*2+1)",
+			stmt: &ast.InsertStatement{
+				Table: "customers",
+				Columns: []string{
+					"id",
+					"name",
+					"salary",
+				},
+				Values: []ast.Expression{
+					&ast.ScalarExpr{
+						Type:    token.INT,
+						Literal: "10",
+					},
+					&ast.ScalarExpr{
+						Type:    token.TEXT,
+						Literal: "Tom",
+					},
+					&ast.ConditionExpr{
+						Left: &ast.ConditionExpr{
+							Left: &ast.ScalarExpr{
+								Type:    token.INT,
+								Literal: "10",
+							},
+							Operator: token.ASTERISK,
+							Right: &ast.ScalarExpr{
+								Type:    token.INT,
+								Literal: "2",
+							},
+						},
+						Operator: token.PLUS,
+						Right: &ast.ScalarExpr{
+							Type:    token.INT,
+							Literal: "1",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.input, func(t *testing.T) {
+			t.Parallel()
+
+			p := New(lexer.New(test.input))
+			stmts, err := p.Parse()
+			assert.NoError(t, err)
+			assert.Equal(t, test.stmt, stmts)
+		})
+	}
+}
+
 func TestParser_CreateTable(t *testing.T) {
 	t.Parallel()
 
