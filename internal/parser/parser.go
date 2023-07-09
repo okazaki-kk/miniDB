@@ -124,10 +124,17 @@ func (p *Parser) parseInsertStatement() (ast.Statement, error) {
 }
 
 func (p *Parser) parseCreateStatement() (ast.Statement, error) {
-	if p.token.Type == token.DATABASE {
+	switch p.token.Type {
+	case token.TABLE:
+		return p.parseCreateTableStatement()
+	case token.DATABASE:
 		return p.parseCreateDatabaseStatement()
+	default:
+		return nil, fmt.Errorf("unexpected statement: %s(%q)", p.token.Type, p.token.Literal)
 	}
+}
 
+func (p *Parser) parseCreateTableStatement() (ast.Statement, error) {
 	p.nextToken()
 	table, err := p.parseIdent()
 	if err != nil {
