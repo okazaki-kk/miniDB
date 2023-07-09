@@ -79,6 +79,7 @@ func (s *CreateTableStatement) statementNode() {}
 func (s *OrderByStatement) statementNode()     {}
 func (s *LimitStatement) statementNode()       {}
 func (s *OffsetStatement) statementNode()      {}
+func (i *InsertStatement) statementNode()      {}
 
 // IdentExpr node represents an identifier.
 type IdentExpr struct {
@@ -104,3 +105,9 @@ func (e *IdentExpr) expressionNode()     {}
 func (e *ScalarExpr) expressionNode()    {}
 func (e *AsteriskExpr) expressionNode()  {}
 func (e *ConditionExpr) expressionNode() {}
+
+type InsertStatement struct {
+	Table   string
+	Columns []string
+	Values  []Expression
+}
