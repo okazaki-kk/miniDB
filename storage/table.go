@@ -24,7 +24,12 @@ func NewTable(name string, scheme sql.Scheme) *Table {
 		}
 	}
 
-	return &Table{name: name, scheme: scheme, primaryKey: pk}
+	return &Table{
+		name:       name,
+		scheme:     scheme,
+		primaryKey: pk,
+		rows:       make(map[int64]sql.Row),
+	}
 }
 
 func (t *Table) Name() string {
