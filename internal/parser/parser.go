@@ -213,7 +213,7 @@ func (p *Parser) parseResult() (ast.ResultStatement, error) {
 
 func (p *Parser) parseFromStatement() (*ast.FromStatement, error) {
 	if p.token.Type != token.FROM {
-		return nil, fmt.Errorf("unexpected token %q, expected where", p.token.Type)
+		return nil, nil
 	}
 
 	p.nextToken()
