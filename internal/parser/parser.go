@@ -39,6 +39,8 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 		return p.parseSelectStatement()
 	case token.INSERT:
 		return p.parseInsertStatement()
+	case token.UPDATE:
+		return p.parseUpdateStatement()
 	case token.CREATE:
 		p.nextToken()
 		return p.parseCreateStatement()
@@ -121,6 +123,27 @@ func (p *Parser) parseInsertStatement() (ast.Statement, error) {
 	}
 
 	return &insert, nil
+}
+
+func (p *Parser) parseUpdateStatement() (ast.Statement, error) {
+	p.nextToken()
+
+	table, err := p.parseIdent()
+	if err != nil {
+		return nil, err
+	}
+
+	set, err := p.parseSetStatement()
+	if err != nil {
+		return nil, err
+	}
+
+	where, err := p.parseWhereStatement()
+	if err != nil {
+		return nil, err
+	}
+
+	return &ast.UpdateStatement{Table: table.Name, Set: set, Where: where}, nil
 }
 
 func (p *Parser) parseCreateStatement() (ast.Statement, error) {
@@ -287,6 +310,46 @@ func (p *Parser) parseFromStatement() (*ast.FromStatement, error) {
 	}
 
 	return &from, nil
+}
+
+func (p *Parser) parseSetStatement() ([]ast.SetStatement, error) {
+	if err := p.expect(token.SET); err != nil {
+		return nil, err
+	}
+
+	columns := make([]ast.SetStatement, 0)
+
+	for {
+		column, err := p.parseIdent()
+		if err != nil {
+			return nil, err
+		}
+
+		if err = p.expect(token.EQ); err != nil {
+			return nil, err
+		}
+
+		value, err := p.parsePrimaryExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		columns = append(columns, ast.SetStatement{
+			Column: column.Name,
+			Value:  value,
+		})
+
+		if p.peekToken.Type == token.EOF || p.peekToken.Type == token.WHERE {
+			p.nextToken()
+			break
+		}
+
+		if err = p.expect(token.COMMA); err != nil {
+			return nil, err
+		}
+	}
+
+	return columns, nil
 }
 
 func (p *Parser) parseWhereStatement() (*ast.WhereStatement, error) {
