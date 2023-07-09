@@ -69,11 +69,17 @@ func (p *Parser) parseSelectStatement() (ast.Statement, error) {
 		return nil, err
 	}
 
+	limit, err := p.parseLimitStatement()
+	if err != nil {
+		return nil, err
+	}
+
 	selectStmt := ast.SelectStatement{
 		Result:  result,
 		From:    from,
 		Where:   where,
 		OrderBy: order,
+		Limit:   limit,
 	}
 
 	return &selectStmt, nil
@@ -269,6 +275,25 @@ func (p *Parser) parseOrderByStatement() (*ast.OrderByStatement, error) {
 	}
 
 	return &order, nil
+}
+
+func (p *Parser) parseLimitStatement() (*ast.LimitStatement, error) {
+	if p.token.Type != token.LIMIT {
+		return nil, nil
+	}
+	p.nextToken()
+
+	value, err := p.parseScalar(token.INT)
+	if err != nil {
+		return nil, err
+	}
+
+	p.nextToken()
+
+	limit := ast.LimitStatement{
+		Value: value,
+	}
+	return &limit, nil
 }
 
 func (p *Parser) parsePrimaryExpr() (ast.Expression, error) {
