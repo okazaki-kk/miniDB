@@ -43,6 +43,8 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 		return p.parseUpdateStatement()
 	case token.DELETE:
 		return p.parseDeleteStatement()
+	case token.DROP:
+		return p.parseDropStatement()
 	case token.CREATE:
 		p.nextToken()
 		return p.parseCreateStatement()
@@ -212,6 +214,21 @@ func (p *Parser) parseCreateDatabaseStatement() (ast.Statement, error) {
 	}
 
 	return &create, nil
+}
+
+func (p *Parser) parseDropStatement() (ast.Statement, error) {
+	p.nextToken()
+
+	if err := p.expect(token.DATABASE); err != nil {
+		return nil, err
+	}
+
+	database, err := p.parseIdent()
+	if err != nil {
+		return nil, err
+	}
+
+	return &ast.DropDatabaseStatement{Database: database.Name}, nil
 }
 
 func (p *Parser) parseColumns() ([]ast.Column, error) {

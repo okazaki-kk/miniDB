@@ -69,6 +69,10 @@ type CreateDatabaseStatement struct {
 	Database string
 }
 
+type DropDatabaseStatement struct {
+	Database string
+}
+
 // Column node represents a table column definition.
 type Column struct {
 	Name       string
@@ -101,6 +105,7 @@ func (s *LimitStatement) statementNode()          {}
 func (s *OffsetStatement) statementNode()         {}
 func (s *InsertStatement) statementNode()         {}
 func (s *CreateDatabaseStatement) statementNode() {}
+func (s *DropDatabaseStatement) statementNode()   {}
 func (s *UpdateStatement) statementNode()         {}
 func (s *SetStatement) statementNode()            {}
 func (s *DeleteStatement) statementNode()         {}
