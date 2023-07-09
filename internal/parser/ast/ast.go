@@ -27,6 +27,7 @@ type SelectStatement struct {
 	Where   *WhereStatement
 	OrderBy *OrderByStatement
 	Limit   *LimitStatement
+	Offset  *OffsetStatement
 }
 
 // ResultStatement node represents a returning expression in a SELECT statement.
@@ -66,6 +67,10 @@ type LimitStatement struct {
 	Value Expression
 }
 
+type OffsetStatement struct {
+	Value Expression
+}
+
 func (s *SelectStatement) statementNode()      {}
 func (s *ResultStatement) statementNode()      {}
 func (s *FromStatement) statementNode()        {}
@@ -73,6 +78,7 @@ func (s *WhereStatement) statementNode()       {}
 func (s *CreateTableStatement) statementNode() {}
 func (s *OrderByStatement) statementNode()     {}
 func (s *LimitStatement) statementNode()       {}
+func (s *OffsetStatement) statementNode()      {}
 
 // IdentExpr node represents an identifier.
 type IdentExpr struct {
