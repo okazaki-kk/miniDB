@@ -8,6 +8,7 @@ import (
 	"os/user"
 	"strings"
 
+	"github.com/okazaki-kk/miniDB/internal/engine"
 	"github.com/okazaki-kk/miniDB/internal/sql"
 )
 
@@ -18,13 +19,15 @@ type Repl struct {
 	output   io.Writer
 	catalog  sql.Catalog
 	database sql.Database
+	engine   engine.Engine
 }
 
-func New(input io.Reader, output io.Writer, catalog sql.Catalog) *Repl {
+func New(input io.Reader, output io.Writer, catalog sql.Catalog, engine engine.Engine) *Repl {
 	return &Repl{
 		input:   input,
 		output:  output,
 		catalog: catalog,
+		engine:  engine,
 	}
 }
 
@@ -47,11 +50,20 @@ func (r Repl) Start() {
 		}
 
 		line := scanner.Text()
-		if message, err := r.execCommand(line); err != nil {
+		if message, err := r.exec(line); err != nil {
 			io.WriteString(r.output, fmt.Sprintf("%s\n", err.Error()))
 		} else {
 			io.WriteString(r.output, message)
 		}
+	}
+}
+
+func (r *Repl) exec(input string) (string, error) {
+	switch input[0] {
+	case '\\':
+		return r.execCommand(input)
+	default:
+		return r.execQuery(input)
 	}
 }
 
@@ -81,4 +93,18 @@ func (r *Repl) useDatabase(params []string) (string, error) {
 	io.WriteString(r.output, fmt.Sprintf("database %s using", db.Name()))
 
 	return "database changed\n", nil
+}
+
+func (r *Repl) execQuery(input string) (string, error) {
+	var database string
+
+	if r.database != nil {
+		database = r.database.Name()
+	}
+
+	message, err := r.engine.Exec(database, input)
+	if err != nil {
+		return message, fmt.Errorf("failed to execute query: %w", err)
+	}
+	return message, nil
 }
