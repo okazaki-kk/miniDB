@@ -489,3 +489,67 @@ func TestParser_CreateTable(t *testing.T) {
 		})
 	}
 }
+
+func TestParser_Update(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		input string
+		stmt  ast.Statement
+	}{
+		{
+			input: "UPDATE customers SET name = 'vlad', salary = 10*100 WHERE id = 1",
+			stmt: &ast.UpdateStatement{
+				Table: "customers",
+				Set: []ast.SetStatement{
+					{
+						Column: "name",
+						Value: &ast.ScalarExpr{
+							Type:    token.TEXT,
+							Literal: "vlad",
+						},
+					},
+					{
+						Column: "salary",
+						Value: &ast.ConditionExpr{
+							Left: &ast.ScalarExpr{
+								Type:    token.INT,
+								Literal: "10",
+							},
+							Operator: token.ASTERISK,
+							Right: &ast.ScalarExpr{
+								Type:    token.INT,
+								Literal: "100",
+							},
+						},
+					},
+				},
+				Where: &ast.WhereStatement{
+					Expr: &ast.ConditionExpr{
+						Left: &ast.IdentExpr{
+							Name: "id",
+						},
+						Operator: token.EQ,
+						Right: &ast.ScalarExpr{
+							Type:    token.INT,
+							Literal: "1",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.input, func(t *testing.T) {
+			t.Parallel()
+
+			p := New(lexer.New(test.input))
+			stmts, err := p.Parse()
+			assert.NoError(t, err)
+			assert.Equal(t, test.stmt, stmts)
+		})
+	}
+}
