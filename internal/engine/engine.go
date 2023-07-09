@@ -35,5 +35,5 @@ func (e *Engine) Exec(database, input string) (string, error) {
 
 func (e *Engine) CreateDatabase(name string) (string, error) {
 	db, err := e.catalog.CreateDatabase(name)
-	return fmt.Sprintf("create database %s", db.Name()), err
+	return fmt.Sprintf("create database %s\n", db.Name()), err
 }
