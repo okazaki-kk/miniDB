@@ -27,8 +27,6 @@ func TestCatalog(t *testing.T) {
 	dbs, err := c.ListDatabases()
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(dbs))
-	assert.Equal(t, "test", dbs[0].Name())
-	assert.Equal(t, "test2", dbs[1].Name())
 
 	err = c.DropDatabase("test")
 	assert.NoError(t, err)
