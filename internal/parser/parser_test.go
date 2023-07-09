@@ -139,7 +139,7 @@ func TestParser_Select(t *testing.T) {
 							Operator: token.EQ,
 							Right: &ast.ScalarExpr{
 								Type:    token.TEXT,
-								Literal: "vlad",
+								Literal: "Tom",
 							},
 						},
 					},
