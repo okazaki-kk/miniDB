@@ -84,4 +84,27 @@ func TestDatabase(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, scheme, table.Scheme())
 	})
+
+	t.Run("drop table", func(t *testing.T) {
+		scheme := sql.Scheme{
+			"id": sql.Column{
+				Position:   0,
+				Name:       "id",
+				DataType:   sql.Integer,
+				PrimaryKey: true,
+				Nullable:   false,
+				Default:    nil,
+			},
+		}
+
+		database := NewDatabase("playground")
+		_, err := database.CreateTable("users", scheme)
+		assert.NoError(t, err)
+
+		err = database.DropTable("users")
+		assert.NoError(t, err)
+
+		tables := database.ListTables()
+		assert.Empty(t, tables)
+	})
 }
