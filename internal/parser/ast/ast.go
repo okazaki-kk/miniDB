@@ -49,6 +49,10 @@ type CreateTableStatement struct {
 	Columns []Column
 }
 
+type CreateDatabaseStatement struct {
+	Database string
+}
+
 // Column node represents a table column definition.
 type Column struct {
 	Name       string
@@ -71,15 +75,16 @@ type OffsetStatement struct {
 	Value Expression
 }
 
-func (s *SelectStatement) statementNode()      {}
-func (s *ResultStatement) statementNode()      {}
-func (s *FromStatement) statementNode()        {}
-func (s *WhereStatement) statementNode()       {}
-func (s *CreateTableStatement) statementNode() {}
-func (s *OrderByStatement) statementNode()     {}
-func (s *LimitStatement) statementNode()       {}
-func (s *OffsetStatement) statementNode()      {}
-func (i *InsertStatement) statementNode()      {}
+func (s *SelectStatement) statementNode()         {}
+func (s *ResultStatement) statementNode()         {}
+func (s *FromStatement) statementNode()           {}
+func (s *WhereStatement) statementNode()          {}
+func (s *CreateTableStatement) statementNode()    {}
+func (s *OrderByStatement) statementNode()        {}
+func (s *LimitStatement) statementNode()          {}
+func (s *OffsetStatement) statementNode()         {}
+func (s *InsertStatement) statementNode()         {}
+func (s *CreateDatabaseStatement) statementNode() {}
 
 // IdentExpr node represents an identifier.
 type IdentExpr struct {
