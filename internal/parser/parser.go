@@ -37,6 +37,10 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 	// DML
 	case token.SELECT:
 		return p.parseSelectStatement()
+	case token.CREATE:
+		p.nextToken()
+		p.nextToken()
+		return p.parseCreateStatement()
 	default:
 		return nil, fmt.Errorf("unexpected statement: %s(%q)", p.token.Type, p.token.Literal)
 	}
@@ -67,6 +71,87 @@ func (p *Parser) parseSelectStatement() (ast.Statement, error) {
 	}
 
 	return &selectStmt, nil
+}
+
+func (p *Parser) parseCreateStatement() (ast.Statement, error) {
+	table, err := p.parseIdent()
+	if err != nil {
+		return nil, err
+	}
+
+	columns, err := p.parseColumns()
+	if err != nil {
+		return nil, err
+	}
+
+	create := ast.CreateTableStatement{
+		Table:   table.Name,
+		Columns: columns,
+	}
+
+	return &create, nil
+}
+
+func (p *Parser) parseColumns() ([]ast.Column, error) {
+	if p.token.Literal != "(" {
+		return nil, fmt.Errorf("expected (, got %q", p.token.Literal)
+	}
+
+	p.nextToken()
+
+	columns := make([]ast.Column, 0)
+
+	for p.token.Type != token.EOF && p.token.Type != token.RPAREN {
+		if p.token.Type == token.COMMA {
+			p.nextToken()
+		}
+
+		column, err := p.parseColumn()
+		if err != nil {
+			return nil, err
+		}
+
+		columns = append(columns, column)
+	}
+
+	if p.token.Literal != ")" {
+		return nil, fmt.Errorf("expected (, got %q", p.token.Literal)
+	}
+	p.nextToken()
+
+	return columns, nil
+}
+
+func (p *Parser) parseColumn() (ast.Column, error) {
+	columnName, err := p.parseIdent()
+	if err != nil {
+		return ast.Column{}, err
+	}
+
+	columnType, err := p.parseColumnType()
+	if err != nil {
+		return ast.Column{}, err
+	}
+
+	column := ast.Column{
+		Name: columnName.Name,
+		Type: columnType,
+	}
+
+	return column, nil
+}
+
+func (p *Parser) parseColumnType() (token.TokenType, error) {
+	fmt.Println(p.token.Type, p.token.Literal)
+	switch p.token.Type {
+	case token.INT, token.TEXT, token.TRUE, token.FALSE:
+		columnType := p.token.Type
+		p.nextToken()
+
+		return columnType, nil
+	}
+
+	return "", fmt.Errorf("unexpected column type: %q", p.token.Type)
 }
 
 func (p *Parser) parseResultStatement() ([]ast.ResultStatement, error) {
@@ -263,4 +348,17 @@ func (p *Parser) peekPrecedence() int {
 		return p
 	}
 	return LOWEST
+}
+
+func (p *Parser) peekTokenIs(t token.TokenType) bool {
+	return p.peekToken.Type == t
+}
+
+func (p *Parser) expectPeek(t token.TokenType) error {
+	if p.peekTokenIs(t) {
+		p.nextToken()
+		return nil
+	} else {
+		return fmt.Errorf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
+	}
 }
