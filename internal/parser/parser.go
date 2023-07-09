@@ -41,7 +41,6 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 		return p.parseInsertStatement()
 	case token.CREATE:
 		p.nextToken()
-		p.nextToken()
 		return p.parseCreateStatement()
 	default:
 		return nil, fmt.Errorf("unexpected statement: %s(%q)", p.token.Type, p.token.Literal)
@@ -125,6 +124,11 @@ func (p *Parser) parseInsertStatement() (ast.Statement, error) {
 }
 
 func (p *Parser) parseCreateStatement() (ast.Statement, error) {
+	if p.token.Type == token.DATABASE {
+		return p.parseCreateDatabaseStatement()
+	}
+
+	p.nextToken()
 	table, err := p.parseIdent()
 	if err != nil {
 		return nil, err
@@ -138,6 +142,21 @@ func (p *Parser) parseCreateStatement() (ast.Statement, error) {
 	create := ast.CreateTableStatement{
 		Table:   table.Name,
 		Columns: columns,
+	}
+
+	return &create, nil
+}
+
+func (p *Parser) parseCreateDatabaseStatement() (ast.Statement, error) {
+	p.nextToken()
+
+	database, err := p.parseIdent()
+	if err != nil {
+		return nil, err
+	}
+
+	create := ast.CreateDatabaseStatement{
+		Database: database.Name,
 	}
 
 	return &create, nil
