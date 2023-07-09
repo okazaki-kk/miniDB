@@ -553,3 +553,44 @@ func TestParser_Update(t *testing.T) {
 		})
 	}
 }
+
+func TestParser_Delete(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		input string
+		stmt  ast.Statement
+	}{
+		{
+			input: "DELETE FROM customers WHERE id = 10",
+			stmt: &ast.DeleteStatement{
+				Table: "customers",
+				Where: &ast.WhereStatement{
+					Expr: &ast.ConditionExpr{
+						Left: &ast.IdentExpr{
+							Name: "id",
+						},
+						Operator: token.EQ,
+						Right: &ast.ScalarExpr{
+							Type:    token.INT,
+							Literal: "10",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.input, func(t *testing.T) {
+			t.Parallel()
+
+			p := New(lexer.New(test.input))
+			stmts, err := p.Parse()
+			assert.NoError(t, err)
+			assert.Equal(t, test.stmt, stmts)
+		})
+	}
+}

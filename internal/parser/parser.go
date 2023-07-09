@@ -41,6 +41,8 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 		return p.parseInsertStatement()
 	case token.UPDATE:
 		return p.parseUpdateStatement()
+	case token.DELETE:
+		return p.parseDeleteStatement()
 	case token.CREATE:
 		p.nextToken()
 		return p.parseCreateStatement()
@@ -144,6 +146,26 @@ func (p *Parser) parseUpdateStatement() (ast.Statement, error) {
 	}
 
 	return &ast.UpdateStatement{Table: table.Name, Set: set, Where: where}, nil
+}
+
+func (p *Parser) parseDeleteStatement() (ast.Statement, error) {
+	p.nextToken()
+
+	if err := p.expect(token.FROM); err != nil {
+		return nil, err
+	}
+
+	table, err := p.parseIdent()
+	if err != nil {
+		return nil, err
+	}
+
+	where, err := p.parseWhereStatement()
+	if err != nil {
+		return nil, err
+	}
+
+	return &ast.DeleteStatement{Table: table.Name, Where: where}, nil
 }
 
 func (p *Parser) parseCreateStatement() (ast.Statement, error) {

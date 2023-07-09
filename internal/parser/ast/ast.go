@@ -41,6 +41,11 @@ type SetStatement struct {
 	Value  Expression
 }
 
+type DeleteStatement struct {
+	Table string
+	Where *WhereStatement
+}
+
 // ResultStatement node represents a returning expression in a SELECT statement.
 type ResultStatement struct {
 	Expr Expression
@@ -98,6 +103,7 @@ func (s *InsertStatement) statementNode()         {}
 func (s *CreateDatabaseStatement) statementNode() {}
 func (s *UpdateStatement) statementNode()         {}
 func (s *SetStatement) statementNode()            {}
+func (s *DeleteStatement) statementNode()         {}
 
 // IdentExpr node represents an identifier.
 type IdentExpr struct {
