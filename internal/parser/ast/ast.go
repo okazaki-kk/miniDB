@@ -30,6 +30,17 @@ type SelectStatement struct {
 	Offset  *OffsetStatement
 }
 
+type UpdateStatement struct {
+	Table string
+	Set   []SetStatement
+	Where *WhereStatement
+}
+
+type SetStatement struct {
+	Column string
+	Value  Expression
+}
+
 // ResultStatement node represents a returning expression in a SELECT statement.
 type ResultStatement struct {
 	Expr Expression
@@ -85,6 +96,8 @@ func (s *LimitStatement) statementNode()          {}
 func (s *OffsetStatement) statementNode()         {}
 func (s *InsertStatement) statementNode()         {}
 func (s *CreateDatabaseStatement) statementNode() {}
+func (s *UpdateStatement) statementNode()         {}
+func (s *SetStatement) statementNode()            {}
 
 // IdentExpr node represents an identifier.
 type IdentExpr struct {
