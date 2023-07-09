@@ -64,10 +64,16 @@ func (p *Parser) parseSelectStatement() (ast.Statement, error) {
 		return nil, err
 	}
 
+	order, err := p.parseOrderByStatement()
+	if err != nil {
+		return nil, err
+	}
+
 	selectStmt := ast.SelectStatement{
-		Result: result,
-		From:   from,
-		Where:  where,
+		Result:  result,
+		From:    from,
+		Where:   where,
+		OrderBy: order,
 	}
 
 	return &selectStmt, nil
@@ -233,6 +239,38 @@ func (p *Parser) parseWhereStatement() (*ast.WhereStatement, error) {
 	return &where, nil
 }
 
+func (p *Parser) parseOrderByStatement() (*ast.OrderByStatement, error) {
+	if p.token.Type != token.ORDER {
+		return nil, nil
+	}
+
+	p.nextToken()
+
+	if err := p.expect(token.BY); err != nil {
+		return nil, err
+	}
+
+	column, err := p.parseIdent()
+	if err != nil {
+		return nil, err
+	}
+
+	var direction token.TokenType = token.ASC
+
+	switch p.token.Type {
+	case token.ASC, token.DESC:
+		direction = p.token.Type
+		p.nextToken()
+	}
+
+	order := ast.OrderByStatement{
+		Column:    column.Name,
+		Direction: direction,
+	}
+
+	return &order, nil
+}
+
 func (p *Parser) parsePrimaryExpr() (ast.Expression, error) {
 	expr, err := p.parseExpr(LOWEST)
 	if err != nil {
@@ -352,15 +390,17 @@ func (p *Parser) peekPrecedence() int {
 	return LOWEST
 }
 
-func (p *Parser) peekTokenIs(t token.TokenType) bool {
-	return p.peekToken.Type == t
-}
+func (p *Parser) expect(tokenType token.TokenType) error {
+	defer p.nextToken()
 
-func (p *Parser) expectPeek(t token.TokenType) error {
-	if p.peekTokenIs(t) {
-		p.nextToken()
+	if p.token.Type == tokenType {
 		return nil
-	} else {
-		return fmt.Errorf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
 	}
+
+	return fmt.Errorf(
+		"expected %q but found %q (%s)",
+		tokenType,
+		p.token.Literal,
+		p.token.Type,
+	)
 }

@@ -22,9 +22,10 @@ type Expression interface {
 
 // SelectStatement node represents a SELECT statement.
 type SelectStatement struct {
-	Result []ResultStatement
-	From   *FromStatement
-	Where  *WhereStatement
+	Result  []ResultStatement
+	From    *FromStatement
+	Where   *WhereStatement
+	OrderBy *OrderByStatement
 }
 
 // ResultStatement node represents a returning expression in a SELECT statement.
@@ -55,11 +56,17 @@ type Column struct {
 	PrimaryKey bool
 }
 
+type OrderByStatement struct {
+	Column    string
+	Direction token.TokenType
+}
+
 func (s *SelectStatement) statementNode()      {}
 func (s *ResultStatement) statementNode()      {}
 func (s *FromStatement) statementNode()        {}
 func (s *WhereStatement) statementNode()       {}
 func (s *CreateTableStatement) statementNode() {}
+func (s *OrderByStatement) statementNode()     {}
 
 // IdentExpr node represents an identifier.
 type IdentExpr struct {
