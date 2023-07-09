@@ -38,6 +38,8 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 	case token.SELECT:
 		return p.parseSelectStatement()
 	case token.CREATE:
+		p.nextToken()
+		p.nextToken()
 		return p.parseCreateStatement()
 	default:
 		return nil, fmt.Errorf("unexpected statement: %s(%q)", p.token.Type, p.token.Literal)
@@ -72,12 +74,6 @@ func (p *Parser) parseSelectStatement() (ast.Statement, error) {
 }
 
 func (p *Parser) parseCreateStatement() (ast.Statement, error) {
-	if err := p.expectPeek(token.TABLE); err != nil {
-		return nil, err
-	}
-
-	p.nextToken()
-
 	table, err := p.parseIdent()
 	if err != nil {
 		return nil, err
@@ -97,8 +93,8 @@ func (p *Parser) parseCreateStatement() (ast.Statement, error) {
 }
 
 func (p *Parser) parseColumns() ([]ast.Column, error) {
-	if p.token.Type != token.LPAREN {
-		return nil, fmt.Errorf("expected LPAREN, got %q", p.token.Type)
+	if p.token.Literal != "(" {
+		return nil, fmt.Errorf("expected (, got %q", p.token.Literal)
 	}
 
 	p.nextToken()
@@ -118,9 +114,10 @@ func (p *Parser) parseColumns() ([]ast.Column, error) {
 		columns = append(columns, column)
 	}
 
-	if err := p.expectPeek(token.RPAREN); err != nil {
-		return nil, err
+	if p.token.Literal != ")" {
+		return nil, fmt.Errorf("expected (, got %q", p.token.Literal)
 	}
+	p.nextToken()
 
 	return columns, nil
 }
@@ -146,7 +143,7 @@ func (p *Parser) parseColumn() (ast.Column, error) {
 
 func (p *Parser) parseColumnType() (token.TokenType, error) {
 	fmt.Println(p.token.Type, p.token.Literal)
-	switch p.token.Literal {
+	switch p.token.Type {
 	case token.INT, token.TEXT, token.TRUE, token.FALSE:
 		columnType := p.token.Type
 		p.nextToken()
