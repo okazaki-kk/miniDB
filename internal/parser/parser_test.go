@@ -196,6 +196,77 @@ func TestParser_Select(t *testing.T) {
 				},
 			},
 		},
+		{
+			input: "SELECT id FROM customers WHERE id = 10 AND name = 'vlad' ORDER BY id ASC LIMIT 99 OFFSET 10",
+			stmt: &ast.SelectStatement{
+				Result: []ast.ResultStatement{
+					{
+						Expr: &ast.IdentExpr{
+							Name: "id",
+						},
+					},
+				},
+				From: &ast.FromStatement{
+					Table: "customers",
+				},
+				Where: &ast.WhereStatement{
+					Expr: &ast.ConditionExpr{
+						Left: &ast.ConditionExpr{
+							Left:     &ast.IdentExpr{Name: "id"},
+							Operator: token.EQ,
+							Right: &ast.ScalarExpr{
+								Type:    token.INT,
+								Literal: "10",
+							},
+						},
+						Operator: token.AND,
+						Right: &ast.ConditionExpr{
+							Left:     &ast.IdentExpr{Name: "name"},
+							Operator: token.EQ,
+							Right: &ast.ScalarExpr{
+								Type:    token.TEXT,
+								Literal: "vlad",
+							},
+						},
+					},
+				},
+				OrderBy: &ast.OrderByStatement{
+					Column:    "id",
+					Direction: token.ASC,
+				},
+				Limit: &ast.LimitStatement{
+					Value: &ast.ScalarExpr{
+						Type:    token.INT,
+						Literal: "99",
+					},
+				},
+				Offset: &ast.OffsetStatement{
+					Value: &ast.ScalarExpr{
+						Type:    token.INT,
+						Literal: "10",
+					},
+				},
+			},
+		},
+		{
+			input: "SELECT id FROM customers ORDER BY id",
+			stmt: &ast.SelectStatement{
+				Result: []ast.ResultStatement{
+					{
+						Expr: &ast.IdentExpr{
+							Name: "id",
+						},
+					},
+				},
+				From: &ast.FromStatement{
+					Table: "customers",
+				},
+				OrderBy: &ast.OrderByStatement{
+					Column:    "id",
+					Direction: token.ASC,
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
