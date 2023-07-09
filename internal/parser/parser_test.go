@@ -74,6 +74,43 @@ func TestParser_Select(t *testing.T) {
 				},
 			},
 		},
+
+		{
+			input: "SELECT id FROM customers WHERE id = 10 AND name = 'vlad'",
+			stmt: &ast.SelectStatement{
+				Result: []ast.ResultStatement{
+					{
+						Expr: &ast.IdentExpr{
+							Name: "id",
+						},
+					},
+				},
+				From: &ast.FromStatement{
+					Table: "customers",
+				},
+				Where: &ast.WhereStatement{
+					Expr: &ast.ConditionExpr{
+						Left: &ast.ConditionExpr{
+							Left:     &ast.IdentExpr{Name: "id"},
+							Operator: token.EQ,
+							Right: &ast.ScalarExpr{
+								Type:    token.INT,
+								Literal: "10",
+							},
+						},
+						Operator: token.AND,
+						Right: &ast.ConditionExpr{
+							Left:     &ast.IdentExpr{Name: "name"},
+							Operator: token.EQ,
+							Right: &ast.ScalarExpr{
+								Type:    token.TEXT,
+								Literal: "vlad",
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
