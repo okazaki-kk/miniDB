@@ -310,9 +310,11 @@ func (p *Parser) parseScalar(expected token.TokenType) (ast.Expression, error) {
 
 func (p *Parser) parseConditionExpr(left ast.Expression) (ast.Expression, error) {
 	operator := p.token.Type
+	precedence := precedences[operator]
+
 	p.nextToken()
 
-	right, err := p.parseExpr(LOWEST)
+	right, err := p.parseExpr(precedence)
 	if err != nil {
 		return nil, err
 	}
