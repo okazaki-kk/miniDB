@@ -1,9 +1,5 @@
 package sql
 
-type Sequence interface {
-	Next() int64
-}
-
 type Scheme map[string]Column
 
 type Column struct {

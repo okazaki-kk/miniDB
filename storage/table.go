@@ -44,10 +44,6 @@ func (t *Table) Scheme() sql.Scheme {
 	return t.scheme
 }
 
-func (t *Table) Sequence() sql.Sequence {
-	return nil
-}
-
 func (t *Table) Scan() (sql.RowIter, error) {
 	rows := make([]sql.Row, 0, len(t.keys))
 
