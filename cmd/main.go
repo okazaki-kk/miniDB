@@ -10,7 +10,7 @@ import (
 
 func main() {
 	catalog := storage.NewCatalog()
-	engine := engine.New(catalog)
-	r := repl.New(os.Stdin, os.Stdout, storage.NewCatalog(), *engine)
+	engine := engine.New(*catalog)
+	r := repl.New(os.Stdin, os.Stdout, *catalog, *engine)
 	r.Start()
 }

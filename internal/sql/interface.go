@@ -1,12 +1,5 @@
 package sql
 
-type Catalog interface {
-	GetDatabase(name string) (Database, error)
-	ListDatabases() ([]Database, error)
-	CreateDatabase(name string) (Database, error)
-	DropDatabase(name string) error
-}
-
 type Database interface {
 	Name() string
 	GetTable(name string) (Table, error)

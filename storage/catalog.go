@@ -1,31 +1,27 @@
 package storage
 
-import (
-	"fmt"
-
-	"github.com/okazaki-kk/miniDB/internal/sql"
-)
+import "fmt"
 
 type Catalog struct {
-	databases map[string]sql.Database
+	databases map[string]Database
 }
 
 func NewCatalog() *Catalog {
 	return &Catalog{
-		databases: make(map[string]sql.Database),
+		databases: make(map[string]Database),
 	}
 }
 
-func (c *Catalog) GetDatabase(name string) (sql.Database, error) {
+func (c *Catalog) GetDatabase(name string) (Database, error) {
 	if database, ok := c.databases[name]; ok {
 		return database, nil
 	}
 
-	return nil, fmt.Errorf("database %q not found", name)
+	return Database{}, fmt.Errorf("database %q not found", name)
 }
 
-func (c *Catalog) ListDatabases() ([]sql.Database, error) {
-	databases := make([]sql.Database, 0, len(c.databases))
+func (c *Catalog) ListDatabases() ([]Database, error) {
+	databases := make([]Database, 0, len(c.databases))
 
 	for name := range c.databases {
 		databases = append(databases, c.databases[name])
@@ -34,15 +30,15 @@ func (c *Catalog) ListDatabases() ([]sql.Database, error) {
 	return databases, nil
 }
 
-func (c *Catalog) CreateDatabase(name string) (sql.Database, error) {
+func (c *Catalog) CreateDatabase(name string) (Database, error) {
 	if _, ok := c.databases[name]; ok {
-		return nil, fmt.Errorf("database %q already exist", name)
+		return Database{}, fmt.Errorf("database %q already exist", name)
 	}
 
 	database := NewDatabase(name)
-	c.databases[name] = database
+	c.databases[name] = *database
 
-	return database, nil
+	return *database, nil
 }
 
 func (c *Catalog) DropDatabase(name string) error {

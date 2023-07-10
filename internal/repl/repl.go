@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/okazaki-kk/miniDB/internal/engine"
-	"github.com/okazaki-kk/miniDB/internal/sql"
+	"github.com/okazaki-kk/miniDB/storage"
 )
 
 const PROMPT = "miniDB >> "
@@ -17,12 +17,12 @@ const PROMPT = "miniDB >> "
 type Repl struct {
 	input    io.Reader
 	output   io.Writer
-	catalog  sql.Catalog
-	database sql.Database
+	catalog  storage.Catalog
+	database storage.Database
 	engine   engine.Engine
 }
 
-func New(input io.Reader, output io.Writer, catalog sql.Catalog, engine engine.Engine) *Repl {
+func New(input io.Reader, output io.Writer, catalog storage.Catalog, engine engine.Engine) *Repl {
 	return &Repl{
 		input:   input,
 		output:  output,
@@ -98,9 +98,7 @@ func (r *Repl) useDatabase(params []string) (string, error) {
 func (r *Repl) execQuery(input string) (string, error) {
 	var database string
 
-	if r.database != nil {
-		database = r.database.Name()
-	}
+	database = r.database.Name()
 
 	message, err := r.engine.Exec(database, input)
 	if err != nil {
