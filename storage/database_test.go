@@ -36,7 +36,7 @@ func TestDatabase(t *testing.T) {
 		tickets, err := database.CreateTable("tickets", scheme)
 		assert.NoError(t, err)
 
-		expected := []sql.Table{
+		expected := []Table{
 			users,
 			tickets,
 		}

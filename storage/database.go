@@ -19,33 +19,33 @@ func (d *Database) Name() string {
 	return d.name
 }
 
-func (d *Database) ListTables() []sql.Table {
-	tables := make([]sql.Table, 0, len(d.tables))
+func (d *Database) ListTables() []Table {
+	tables := make([]Table, 0, len(d.tables))
 
 	for _, t := range d.tables {
-		tables = append(tables, t)
+		tables = append(tables, *t)
 	}
 
 	return tables
 }
 
-func (d *Database) GetTable(name string) (sql.Table, error) {
+func (d *Database) GetTable(name string) (Table, error) {
 	if table, ok := d.tables[name]; ok {
-		return table, nil
+		return *table, nil
 	}
 
-	return nil, fmt.Errorf("table %q not found", name)
+	return Table{}, fmt.Errorf("table %q not found", name)
 }
 
-func (d *Database) CreateTable(name string, scheme sql.Scheme) (sql.Table, error) {
+func (d *Database) CreateTable(name string, scheme sql.Scheme) (Table, error) {
 	if _, ok := d.tables[name]; ok {
-		return nil, fmt.Errorf("table already exist")
+		return Table{}, fmt.Errorf("table already exist")
 	}
 
 	table := NewTable(name, scheme)
 	d.tables[name] = table
 
-	return table, nil
+	return *table, nil
 }
 
 func (d *Database) DropTable(name string) error {

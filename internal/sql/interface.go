@@ -1,24 +1,5 @@
 package sql
 
-type Database interface {
-	Name() string
-	GetTable(name string) (Table, error)
-	ListTables() []Table
-	CreateTable(name string, scheme Scheme) (Table, error)
-	DropTable(name string) error
-}
-
-type Table interface {
-	Name() string
-	Scheme() Scheme
-	PrimaryKey() Column
-	Sequence() Sequence
-	Scan() (RowIter, error)
-	Insert(key int64, row Row) error
-	Delete(key int64) error
-	Update(key int64, row Row) error
-}
-
 type Sequence interface {
 	Next() int64
 }
