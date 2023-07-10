@@ -8,7 +8,6 @@ type Column struct {
 	DataType   DataType
 	PrimaryKey bool
 	Nullable   bool
-	Default    Value
 }
 
 type CompareType int

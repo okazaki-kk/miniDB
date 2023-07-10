@@ -20,7 +20,6 @@ func TestTable(t *testing.T) {
 			DataType:   sql.Integer,
 			PrimaryKey: true,
 			Nullable:   false,
-			Default:    nil,
 		},
 		"name": sql.Column{
 			Position:   0,
@@ -28,7 +27,6 @@ func TestTable(t *testing.T) {
 			DataType:   sql.Text,
 			PrimaryKey: false,
 			Nullable:   false,
-			Default:    nil,
 		},
 	}
 
@@ -60,7 +58,6 @@ func TestTable_Insert(t *testing.T) {
 				DataType:   sql.Text,
 				PrimaryKey: false,
 				Nullable:   false,
-				Default:    nil,
 			},
 			"id": sql.Column{
 				Position:   1,
@@ -68,7 +65,6 @@ func TestTable_Insert(t *testing.T) {
 				DataType:   sql.Integer,
 				PrimaryKey: true,
 				Nullable:   false,
-				Default:    nil,
 			},
 		}
 
@@ -108,7 +104,6 @@ func TestTable_Update(t *testing.T) {
 				DataType:   sql.Integer,
 				PrimaryKey: true,
 				Nullable:   false,
-				Default:    nil,
 			},
 			"name": sql.Column{
 				Position:   1,
@@ -116,7 +111,6 @@ func TestTable_Update(t *testing.T) {
 				DataType:   sql.Text,
 				PrimaryKey: false,
 				Nullable:   false,
-				Default:    nil,
 			},
 		}
 
@@ -166,7 +160,6 @@ func TestTable_Delete(t *testing.T) {
 				DataType:   sql.Integer,
 				PrimaryKey: true,
 				Nullable:   false,
-				Default:    nil,
 			},
 		}
 
@@ -203,7 +196,6 @@ func TestTable_Delete(t *testing.T) {
 				DataType:   sql.Integer,
 				PrimaryKey: true,
 				Nullable:   false,
-				Default:    nil,
 			},
 		}
 
