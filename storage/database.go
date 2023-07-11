@@ -8,11 +8,11 @@ import (
 
 type Database struct {
 	name   string
-	tables map[string]*Table
+	tables map[string]Table
 }
 
 func NewDatabase(name string) *Database {
-	return &Database{name: name, tables: make(map[string]*Table)}
+	return &Database{name: name, tables: make(map[string]Table)}
 }
 
 func (d *Database) Name() string {
@@ -23,15 +23,15 @@ func (d *Database) ListTables() []Table {
 	tables := make([]Table, 0, len(d.tables))
 
 	for _, t := range d.tables {
-		tables = append(tables, *t)
+		tables = append(tables, t)
 	}
 
 	return tables
 }
 
-func (d *Database) GetTable(name string) (Table, error) {
+func (d Database) GetTable(name string) (Table, error) {
 	if table, ok := d.tables[name]; ok {
-		return *table, nil
+		return table, nil
 	}
 
 	return Table{}, fmt.Errorf("table %q not found", name)
@@ -43,7 +43,7 @@ func (d *Database) CreateTable(name string, scheme sql.Scheme) (Table, error) {
 	}
 
 	table := NewTable(name, scheme)
-	d.tables[name] = table
+	d.tables[name] = *table
 
 	return *table, nil
 }
