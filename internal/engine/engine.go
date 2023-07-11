@@ -6,15 +6,15 @@ import (
 	"github.com/okazaki-kk/miniDB/internal/parser"
 	"github.com/okazaki-kk/miniDB/internal/parser/ast"
 	"github.com/okazaki-kk/miniDB/internal/parser/lexer"
-	"github.com/okazaki-kk/miniDB/internal/sql"
+	"github.com/okazaki-kk/miniDB/storage"
 )
 
 type Engine struct {
 	parser  parser.Parser
-	catalog sql.Catalog
+	catalog storage.Catalog
 }
 
-func New(catalog sql.Catalog) *Engine {
+func New(catalog storage.Catalog) *Engine {
 	return &Engine{catalog: catalog}
 }
 

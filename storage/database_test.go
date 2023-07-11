@@ -26,7 +26,6 @@ func TestDatabase(t *testing.T) {
 				DataType:   sql.Integer,
 				PrimaryKey: true,
 				Nullable:   false,
-				Default:    nil,
 			},
 		}
 
@@ -36,7 +35,7 @@ func TestDatabase(t *testing.T) {
 		tickets, err := database.CreateTable("tickets", scheme)
 		assert.NoError(t, err)
 
-		expected := []sql.Table{
+		expected := []Table{
 			users,
 			tickets,
 		}
@@ -54,7 +53,6 @@ func TestDatabase(t *testing.T) {
 				DataType:   sql.Integer,
 				PrimaryKey: true,
 				Nullable:   false,
-				Default:    nil,
 			},
 		}
 
@@ -75,7 +73,6 @@ func TestDatabase(t *testing.T) {
 				DataType:   sql.Integer,
 				PrimaryKey: true,
 				Nullable:   false,
-				Default:    nil,
 			},
 		}
 
@@ -93,7 +90,6 @@ func TestDatabase(t *testing.T) {
 				DataType:   sql.Integer,
 				PrimaryKey: true,
 				Nullable:   false,
-				Default:    nil,
 			},
 		}
 

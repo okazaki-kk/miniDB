@@ -9,7 +9,7 @@ import (
 
 func TestCreateDatabase(t *testing.T) {
 	catalog := storage.NewCatalog()
-	engine := New(catalog)
+	engine := New(*catalog)
 	message, err := engine.CreateDatabase("test")
 	assert.NoError(t, err)
 	assert.Equal(t, "create database test\n", message)

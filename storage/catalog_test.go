@@ -15,7 +15,6 @@ func TestCatalog(t *testing.T) {
 	db, err = c.CreateDatabase("test")
 	assert.Error(t, err)
 	assert.Equal(t, "database \"test\" already exist", err.Error())
-	assert.Nil(t, db)
 
 	db, err = c.GetDatabase("test")
 	assert.NoError(t, err)
