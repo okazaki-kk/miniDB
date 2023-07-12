@@ -1,8 +1,6 @@
 package storage
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type Database struct {
 	name   string
