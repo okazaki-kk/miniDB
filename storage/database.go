@@ -35,7 +35,7 @@ func (d Database) GetTable(name string) (Table, error) {
 
 func (d *Database) CreateTable(name string, scheme Scheme) (Table, error) {
 	if _, ok := d.tables[name]; ok {
-		return Table{}, fmt.Errorf("table already exist")
+		return Table{}, fmt.Errorf("table %q already exist", name)
 	}
 
 	table := NewTable(name, scheme)
