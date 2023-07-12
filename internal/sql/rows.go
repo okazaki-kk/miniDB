@@ -35,9 +35,3 @@ func (i *SliceRowsIter) Close() error {
 	i.rows = nil
 	return nil
 }
-
-func RowsIter(rows ...Row) RowIter {
-	return &SliceRowsIter{
-		rows: rows,
-	}
-}

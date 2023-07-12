@@ -28,6 +28,8 @@ func (e *Engine) Exec(database, input string) (string, error) {
 	switch stmt := stmt.(type) {
 	case *ast.CreateDatabaseStatement:
 		return e.CreateDatabase(stmt.Database)
+	case *ast.CreateTableStatement:
+		return e.CreateTable(database, stmt.Table, stmt.Columns)
 	default:
 		return "", nil
 	}
@@ -39,4 +41,23 @@ func (e *Engine) CreateDatabase(name string) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf("create database %s\n", db.Name()), err
+}
+
+func (e *Engine) CreateTable(database string, tableName string, columns []ast.Column) (string, error) {
+	db, err := e.catalog.GetDatabase(database)
+	if err != nil {
+		return "", err
+	}
+
+	scheme, err := storage.CreateTableScheme(columns)
+	if err != nil {
+		return "", err
+	}
+
+	_, err = db.CreateTable(tableName, scheme)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("create table %s\n", tableName), err
 }
