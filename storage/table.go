@@ -10,13 +10,13 @@ import (
 type Table struct {
 	name       string
 	rows       map[int64]sql.Row
-	scheme     sql.Scheme
+	scheme     Scheme
 	keys       []int64
-	primaryKey sql.Column
+	primaryKey Column
 }
 
-func NewTable(name string, scheme sql.Scheme) *Table {
-	var pk sql.Column
+func NewTable(name string, scheme Scheme) *Table {
+	var pk Column
 	for col := range scheme {
 		if scheme[col].PrimaryKey {
 			pk = scheme[col]
@@ -36,11 +36,11 @@ func (t *Table) Name() string {
 	return t.name
 }
 
-func (t *Table) PrimaryKey() sql.Column {
+func (t *Table) PrimaryKey() Column {
 	return t.primaryKey
 }
 
-func (t *Table) Scheme() sql.Scheme {
+func (t *Table) Scheme() Scheme {
 	return t.scheme
 }
 

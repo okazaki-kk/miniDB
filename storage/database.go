@@ -1,10 +1,6 @@
 package storage
 
-import (
-	"fmt"
-
-	"github.com/okazaki-kk/miniDB/internal/sql"
-)
+import "fmt"
 
 type Database struct {
 	name   string
@@ -37,7 +33,7 @@ func (d Database) GetTable(name string) (Table, error) {
 	return Table{}, fmt.Errorf("table %q not found", name)
 }
 
-func (d *Database) CreateTable(name string, scheme sql.Scheme) (Table, error) {
+func (d *Database) CreateTable(name string, scheme Scheme) (Table, error) {
 	if _, ok := d.tables[name]; ok {
 		return Table{}, fmt.Errorf("table already exist")
 	}

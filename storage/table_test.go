@@ -13,15 +13,15 @@ func TestTable(t *testing.T) {
 	t.Parallel()
 
 	tableName := "users"
-	scheme := sql.Scheme{
-		"id": sql.Column{
+	scheme := Scheme{
+		"id": Column{
 			Position:   0,
 			Name:       "id",
 			DataType:   sql.Integer,
 			PrimaryKey: true,
 			Nullable:   false,
 		},
-		"name": sql.Column{
+		"name": Column{
 			Position:   0,
 			Name:       "name",
 			DataType:   sql.Text,
@@ -51,15 +51,15 @@ func TestTable(t *testing.T) {
 
 func TestTable_Insert(t *testing.T) {
 	t.Run("insert without errors", func(t *testing.T) {
-		scheme := sql.Scheme{
-			"name": sql.Column{
+		scheme := Scheme{
+			"name": Column{
 				Position:   0,
 				Name:       "name",
 				DataType:   sql.Text,
 				PrimaryKey: false,
 				Nullable:   false,
 			},
-			"id": sql.Column{
+			"id": Column{
 				Position:   1,
 				Name:       "id",
 				DataType:   sql.Integer,
@@ -97,15 +97,15 @@ func TestTable_Insert(t *testing.T) {
 func TestTable_Update(t *testing.T) {
 	t.Run("update without errors", func(t *testing.T) {
 
-		scheme := sql.Scheme{
-			"id": sql.Column{
+		scheme := Scheme{
+			"id": Column{
 				Position:   0,
 				Name:       "id",
 				DataType:   sql.Integer,
 				PrimaryKey: true,
 				Nullable:   false,
 			},
-			"name": sql.Column{
+			"name": Column{
 				Position:   1,
 				Name:       "name",
 				DataType:   sql.Text,
@@ -153,8 +153,8 @@ func TestTable_Delete(t *testing.T) {
 	t.Run("deletes one row", func(t *testing.T) {
 		t.Parallel()
 
-		scheme := sql.Scheme{
-			"id": sql.Column{
+		scheme := Scheme{
+			"id": Column{
 				Position:   1,
 				Name:       "id",
 				DataType:   sql.Integer,
@@ -189,8 +189,8 @@ func TestTable_Delete(t *testing.T) {
 	t.Run("deletes all rows", func(t *testing.T) {
 		t.Parallel()
 
-		scheme := sql.Scheme{
-			"id": sql.Column{
+		scheme := Scheme{
+			"id": Column{
 				Position:   1,
 				Name:       "id",
 				DataType:   sql.Integer,
