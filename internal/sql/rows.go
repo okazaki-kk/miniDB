@@ -2,6 +2,12 @@ package sql
 
 import "io"
 
+type Value interface {
+	Raw() any
+	String() string
+	DataType() DataType
+}
+
 type Row []Value
 
 type RowIter interface {

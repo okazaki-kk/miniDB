@@ -19,8 +19,8 @@ func TestDatabase(t *testing.T) {
 
 	t.Run("return tables", func(t *testing.T) {
 		database := NewDatabase("playground")
-		scheme := sql.Scheme{
-			"id": sql.Column{
+		scheme := Scheme{
+			"id": Column{
 				Position:   0,
 				Name:       "id",
 				DataType:   sql.Integer,
@@ -46,8 +46,8 @@ func TestDatabase(t *testing.T) {
 	})
 
 	t.Run("get table", func(t *testing.T) {
-		scheme := sql.Scheme{
-			"id": sql.Column{
+		scheme := Scheme{
+			"id": Column{
 				Position:   0,
 				Name:       "id",
 				DataType:   sql.Integer,
@@ -66,8 +66,8 @@ func TestDatabase(t *testing.T) {
 	})
 
 	t.Run("create table", func(t *testing.T) {
-		scheme := sql.Scheme{
-			"id": sql.Column{
+		scheme := Scheme{
+			"id": Column{
 				Position:   0,
 				Name:       "id",
 				DataType:   sql.Integer,
@@ -83,8 +83,8 @@ func TestDatabase(t *testing.T) {
 	})
 
 	t.Run("drop table", func(t *testing.T) {
-		scheme := sql.Scheme{
-			"id": sql.Column{
+		scheme := Scheme{
+			"id": Column{
 				Position:   0,
 				Name:       "id",
 				DataType:   sql.Integer,
