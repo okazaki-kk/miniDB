@@ -39,7 +39,7 @@ func TestCreateTable(t *testing.T) {
 		{Name: "name", Type: "TEXT", Nullable: true},
 	})
 	assert.Error(t, err)
-	assert.Equal(t, "table test already exist", err.Error())
+	assert.Equal(t, "table \"test\" already exist", err.Error())
 	assert.Equal(t, "", message)
 
 	message, err = engine.CreateTable("test", "test2", []ast.Column{

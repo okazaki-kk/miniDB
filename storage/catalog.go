@@ -32,7 +32,7 @@ func (c *Catalog) ListDatabases() ([]Database, error) {
 
 func (c *Catalog) CreateDatabase(name string) (Database, error) {
 	if _, ok := c.databases[name]; ok {
-		return Database{}, fmt.Errorf("database %s already exist", name)
+		return Database{}, fmt.Errorf("database %q already exist", name)
 	}
 
 	database := NewDatabase(name)
